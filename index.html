@@ -3716,37 +3716,6 @@ const imagenesProductos = {
     "Coca-Cola Sin Azúcar Mediana": "https://api-middleware-mcd.mcdonaldscupones.com/media/image/product%24CCSA%20Mediano.png/200/200/original?country=mx"
 };
 
-function crearImagenRespaldo(producto) {
-    const tipo = producto.tipo || "Producto";
-    const nombre = producto.nombre || "McDonald's";
-    const iconos = {
-        "Bebida":"🥤",
-        "Desayuno":"🍳",
-        "Postre":"🍦",
-        "Helado":"🍦",
-        "Cajita Feliz":"🎁",
-        "Bebida Cajita Feliz":"🥤",
-        "Cajita Feliz Desayuno":"🎁",
-        "Complemento":"🍟",
-        "Hamburguesa":"🍔",
-        "Pollo":"🍗"
-    };
-    const icono = iconos[tipo] || (nombre.toLowerCase().includes("papa") ? "🍟" : "🍔");
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 500">
-        <defs>
-            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stop-color="#fff8e7"/><stop offset="1" stop-color="#ffe6a3"/>
-            </linearGradient>
-        </defs>
-        <rect width="700" height="500" rx="32" fill="url(#g)"/>
-        <circle cx="350" cy="205" r="125" fill="#ffc72c"/>
-        <text x="350" y="245" text-anchor="middle" font-size="120">${icono}</text>
-        <text x="350" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#c8102e">${nombre.replace(/[&<>"]/g, "")}</text>
-        <text x="350" y="410" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" fill="#555">${tipo.replace(/[&<>"]/g, "")}</text>
-    </svg>`;
-    return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-}
-
 function mostrarProductos(categoria) {
     if (!productos[categoria]) {
         return;
@@ -3771,12 +3740,15 @@ function mostrarProductos(categoria) {
         const tarjeta = document.createElement('article');
         tarjeta.className = 'producto-card';
 
-        const imagen = imagenesProductos[producto.nombre] || crearImagenRespaldo(producto);
-        const imagenHTML = `<img src="${imagen}" alt="${producto.nombre}" loading="lazy" onerror="this.onerror=null; this.src=crearImagenRespaldo(producto);">`;
+        const imagen = imagenesProductos[producto.nombre] || '';
+        const imagenHTML = imagen
+            ? `<img src="${imagen}" alt="${producto.nombre}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+            : '';
 
         tarjeta.innerHTML = `
             <div class="producto-imagen">
                 ${imagenHTML}
+                <div class="producto-sin-imagen" style="display:${imagen ? 'none' : 'flex'}">McDonald's</div>
             </div>
             <div class="producto-info">
                 <h3>${producto.nombre}</h3>
